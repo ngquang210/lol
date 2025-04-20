@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tool Phân Tích MD5 (Từng Ký Tự) - vkhanhh v2 [DEMO]</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+            background-color: #f0f2f5;
+            color: #1c1e21;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 95vh;
+        }
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background: #fff;
+            padding: 30px 35px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border: 1px solid #dddfe2;
+        }
+        h1 {
+            text-align: center;
+            color: #1877f2;
+            margin-bottom: 10px;
+            font-size: 1.9em;
+        }
+        .subtitle {
+            text-align: center;
+            color: #e74c3c; /* Stronger warning color */
+            font-weight: bold;
+            margin-bottom: 25px;
+            font-size: 1em;
+            border: 1px dashed #e74c3c;
+            padding: 8px;
+            background-color: #fdeded;
+        }
+        .toggle-button {
+            display: block;
+            width: 100%;
+            background-color: #e4e6eb;
+            color: #050505;
+            padding: 11px 15px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 20px;
+            transition: background-color 0.2s;
+        }
+        .toggle-button:hover {
+            background-color: #dcdfe4;
+        }
+        .analysis-section {
+            display: none; /* Initially hidden */
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #dddfe2;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #606770;
+        }
+        input[type="text"] {
+            width: calc(100% - 24px);
+            padding: 11px 12px;
+            margin-bottom: 15px;
+            border: 1px solid #ccd0d5;
+            border-radius: 6px;
+            font-size: 16px;
+            background-color: #f5f6f7;
+        }
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #1877f2;
+            box-shadow: 0 0 0 2px #e7f3ff;
+        }
+        .analyze-button {
+            display: block;
+            width: 100%;
+            background-color: #28a745; /* Green */
+            color: white;
+            padding: 11px 15px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 17px;
+            font-weight: bold;
+            transition: background-color 0.2s;
+        }
+        .analyze-button:hover {
+            background-color: #218838;
+        }
+        .result {
+            margin-top: 25px;
+            padding: 18px;
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            display: none;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-size: 14.5px;
+            line-height: 1.7;
+        }
+        .result-title {
+            font-weight: bold;
+            color: #0056b3;
+            margin-bottom: 12px;
+            display: block;
+            font-size: 1.1em;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 8px;
+        }
+        .result-detail {
+             margin-bottom: 8px;
+        }
+         .result-highlight {
+            font-weight: bold;
+            background-color: #e9ecef;
+            padding: 1px 5px;
+            border-radius: 3px;
+            font-family: monospace;
+            font-size: 0.95em;
+         }
+         .percentage-bar {
+            background-color: #e9ecef;
+            border-radius: 5px;
+            overflow: hidden;
+            height: 20px;
+            margin: 15px 0;
+            display: flex; /* Use flexbox for segments */
+         }
+         .percentage-tai {
+            background-color: #fa383e; /* Red */
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.8em;
+            font-weight: bold;
+            transition: width 0.5s ease-in-out;
+         }
+         .percentage-xiu {
+            background-color: #1877f2; /* Blue */
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.8em;
+            font-weight: bold;
+            transition: width 0.5s ease-in-out;
+         }
+        .final-percentage {
+            font-size: 1.2em;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 15px;
+        }
+        .final-percentage .tai { color: #fa383e; }
+        .final-percentage .xiu { color: #1877f2; }
+
+        .error {
+            color: #dc3545;
+            font-weight: bold;
+            padding: 10px;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            border-radius: 4px;
+            margin-top: 15px;
+        }
+        .disclaimer {
+            margin-top: 25px;
+            font-style: italic;
+            color: #e74c3c; /* Match subtitle warning */
+            font-size: 0.95em;
+            text-align: center;
+            padding: 12px;
+            border: 1px solid #e74c3c;
+            background-color: #fdeded;
+            border-radius: 5px;
+            line-height: 1.5;
+        }
+        .disclaimer strong {
+             text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Tool Phân Tích MD5 (Từng Ký Tự) - vkhanhh v2</h1>
+    <p class="subtitle">⚠️ Phân tích dựa trên ĐẾM SỐ LƯỢNG chữ/số - Phương pháp này KHÔNG CÓ CƠ SỞ để dự đoán chính xác kết quả game! Chỉ mang tính chất Demo! ⚠️</p>
+
+    <button id="toggleMd5Button" class="toggle-button">Hiện khu vực nhập Mã MD5</button>
+
+    <div id="md5AnalysisSection" class="analysis-section">
+        <label for="md5Input">Sao chép mã MD5 vào đây:</label>
+        <input type="text" id="md5Input" placeholder="Dán mã MD5 (32 ký tự) cần phân tích...">
+        <button id="analyzeMd5Button" class="analyze-button">Phân Tích Từng Ký Tự</button>
+        <div id="md5Result" class="result"></div>
+         <p class="disclaimer">
+            <strong>⚠️ CẢNH BÁO NGHIÊM TRỌNG:</strong> Tool này tính toán tỷ lệ % dựa trên việc đếm số lượng ký tự LÀ SỐ (0-9) và LÀ CHỮ (a-f) trong chuỗi MD5. Đây là một phương pháp <strong>HOÀN TOÀN TÙY Ý</strong> và <strong>KHÔNG CÓ BẤT KỲ CĂN CỨ NÀO</strong> cho thấy nó liên quan đến quy tắc Tài/Xỉu của bất kỳ cổng game nào. Quy tắc thực tế là bí mật của nhà cái. Kết quả của tool này <strong>KHÔNG THỂ ĐƯỢC COI LÀ "CHUẨN XÁC"</strong> hay đáng tin cậy để đặt cược. <strong>RỦI RO MẤT TIỀN LÀ RẤT CAO NẾU TIN VÀO TOOL NÀY. Sử dụng với sự hiểu biết đầy đủ về hạn chế của nó!</strong>
+        </p>
+    </div>
+
+</div>
+
+<script>
+    // --- Elements ---
+    const toggleMd5Button = document.getElementById('toggleMd5Button');
+    const md5AnalysisSection = document.getElementById('md5AnalysisSection');
+    const md5Input = document.getElementById('md5Input');
+    const analyzeMd5Button = document.getElementById('analyzeMd5Button');
+    const md5Result = document.getElementById('md5Result');
+
+    // --- Event Listeners ---
+    toggleMd5Button.addEventListener('click', () => {
+        const isHidden = md5AnalysisSection.style.display === 'none' || md5AnalysisSection.style.display === '';
+        if (isHidden) {
+            md5AnalysisSection.style.display = 'block';
+            toggleMd5Button.textContent = 'Ẩn khu vực nhập Mã MD5';
+            md5Input.focus();
+        } else {
+            md5AnalysisSection.style.display = 'none';
+            toggleMd5Button.textContent = 'Hiện khu vực nhập Mã MD5';
+            md5Result.style.display = 'none';
+            md5Input.value = '';
+            md5Result.innerHTML = '';
+        }
+    });
+
+    analyzeMd5Button.addEventListener('click', () => {
+        const md5Value = md5Input.value.trim().toLowerCase();
+        md5Result.innerHTML = '';
+        md5Result.style.display = 'block';
+
+        // 1. Validate Input
+        if (md5Value.length !== 32 || !/^[a-f0-9]{32}$/.test(md5Value)) {
+            md5Result.innerHTML = '<p class="error">Lỗi: Mã MD5 không hợp lệ. Vui lòng nhập đúng 32 ký tự bao gồm số (0-9) và chữ (a-f).</p>';
+            return;
+        }
+
+        // 2. Analyze Every Character (Arbitrary Method: Count Digits vs Letters)
+        let digitCount = 0;
+        let letterCount = 0;
+
+        for (let i = 0; i < md5Value.length; i++) {
+            const char = md5Value[i];
+            if (/\d/.test(char)) { // Is it a digit?
+                digitCount++;
+            } else if (/[a-f]/.test(char)) { // Is it a letter (a-f)?
+                letterCount++;
+            }
+            // Ignore any potential invalid characters, though validation should prevent this
+        }
+
+        // 3. Calculate Percentages based on the count
+        const totalChars = 32; // MD5 length is fixed
+        // **ARBITRARY ASSIGNMENT:** Let's *arbitrarily* assign Letters to Tài and Digits to Xỉu for this demo
+        const taiPercentage = ((letterCount / totalChars) * 100).toFixed(2);
+        const xiuPercentage = ((digitCount / totalChars) * 100).toFixed(2);
+
+        // 4. Build Detailed Output
+        let outputHTML = `
+            <span class="result-title">Kết Quả Phân Tích (Dựa Trên Phép Đếm Tùy Ý)</span>
+            <p class="result-detail"><strong>Mã MD5 đã nhập:</strong> <span style="font-family: monospace; word-break: break-all;">${md5Value}</span></p>
+            <p class="result-detail"><strong>Phương pháp phân tích (Demo):</strong> Đếm số lượng ký tự là SỐ (0-9) và ký tự là CHỮ (a-f) trong toàn bộ 32 ký tự.</p>
+            <p class="result-detail"> - Số lượng ký tự là SỐ (0-9): <span class="result-highlight">${digitCount}</span></p>
+            <p class="result-detail"> - Số lượng ký tự là CHỮ (a-f): <span class="result-highlight">${letterCount}</span></p>
+
+            <p style="margin-top: 15px;"><strong>Tỷ lệ % (Tính toán dựa trên phép đếm ở trên - KHÔNG PHẢI XÁC SUẤT THỰC):</strong></p>
+            <div class="percentage-bar">
+                <div class="percentage-tai" style="width: ${taiPercentage}%;" title="Tỷ lệ Chữ (a-f) - Gán cho TÀI (Demo)">${taiPercentage > 10 ? taiPercentage + '%' : ''}</div>
+                <div class="percentage-xiu" style="width: ${xiuPercentage}%;" title="Tỷ lệ Số (0-9) - Gán cho XỈU (Demo)">${xiuPercentage > 10 ? xiuPercentage + '%' : ''}</div>
+            </div>
+            <div class="final-percentage">
+                <span class="tai">TÀI (Chữ a-f): ${taiPercentage}%</span> / <span class="xiu">XỈU (Số 0-9): ${xiuPercentage}%</span>
+            </div>
+            <p style="margin-top:15px; font-size:0.9em; color: #dc3545; text-align:center; font-weight:bold;"><i>(Nhắc lại: Tỷ lệ này chỉ dựa vào số lượng chữ/số trong mã MD5 này. Nó không đại diện cho xác suất thắng thua thực tế trong game.)</i></p>
+        `;
+
+        md5Result.innerHTML = outputHTML;
+    });
+
+    md5Input.addEventListener('keypress', function(event) {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            analyzeMd5Button.click();
+        }
+    });
+
+</script>
+
+</body>
+</html>
